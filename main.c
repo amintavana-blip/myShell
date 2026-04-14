@@ -41,14 +41,16 @@ void *lsh_read_line() {
 
     if (c == EOF || c == '\n')
     {
-        
+
     }
 
     while(1)
     {
         c = getchar();
     }
-};
+}
+
+
 void **lsh_split_line(char *line) {};
 
 int main(int argc, char **argv)
