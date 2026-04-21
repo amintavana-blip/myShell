@@ -124,9 +124,12 @@ int lsh_launch(char **args)
     pid_t pid, wpid;
     int status;
 
+    // using fork() enables the shell to process a shell command and be still accessable to the user.
+
     pid = fork();
     if (pid == 0)
     {
+
         if (execvp(args[0], args) == -1)
         {
             perror("lsh");
@@ -142,10 +145,48 @@ int lsh_launch(char **args)
 
     else
     {
-        
+        do
+        {
+            wpid = waitpid(pid, &status, WUNTRACED); // WUNTRACED tells waitpid to return if a child has stopped (not just exited).
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status)); // WIFSIGNALED returns true if the child was killed by a signal, WIFEXITED returns true if the child terminated normally.
     }
 }
 
-int main(int argc, char **argv)
+// ==== Shell utilities ====
+
+int lsh_cd(char **args);
+int lsh_help(char **args);
+int lsh_exit(char **args);
+
+char *builtin_str[] =
+    {
+
+        "cd",
+        "help",
+        "exit"};
+
+int (*builtin_func[])(char **) =
+    {
+        &lsh_cd,
+        &lsh_help,
+        &lsh_exit};
+
+int lsh_num_builtins()
+{
+    return sizeof(builtin_str) / sizeof(char *);
+}
+
+// ---- Built in function implementations ----
+
+int lsh_cd(char ** args)
+{
+    if(args[1] == NULL)
+    {
+        fprintf(stderr, "lsh: expected argument to \"cd\"\n");
+    }
+    
+}
+
+main(int argc, char **argv)
 {
 }
